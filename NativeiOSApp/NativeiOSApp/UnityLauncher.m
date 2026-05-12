@@ -7,9 +7,11 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+#if !TARGET_OS_SIMULATOR
+
 #include <crt_externs.h>
 
-// Minimal forward declarations so we don't need UnityFramework headers at compile time
 @protocol UnityFrameworkListener @end
 
 @interface UnityFramework : NSObject
@@ -22,7 +24,6 @@
 - (void)registerFrameworkListener:(id<UnityFrameworkListener>)listener;
 @end
 
-// Forward declaration of Unity's app controller type to access rootViewController
 @interface UnityAppController : UIResponder
 @property (nonatomic, readonly) UIViewController *rootViewController;
 @end
@@ -50,7 +51,6 @@ static UnityFramework *_ufw = nil;
 - (UnityFramework *)loadUnityFramework {
     if (_ufw) return _ufw;
 
-    // Load UnityFramework bundle from main app Frameworks/
     NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
     NSString *ufwPath = [bundlePath stringByAppendingPathComponent:@"Frameworks/UnityFramework.framework"];
     NSBundle *ufwBundle = [NSBundle bundleWithPath:ufwPath];
@@ -86,7 +86,6 @@ static UnityFramework *_ufw = nil;
     if (![ufw appController]) {
         NSArray<NSString *> *arguments = [NSProcessInfo processInfo].arguments;
         int argc = (int)arguments.count;
-        // argv must outlive the Unity runtime — intentionally never freed
         char **argv = (char **)calloc((size_t)argc, sizeof(char *));
         for (int i = 0; i < argc; ++i) {
             const char *utf8 = [arguments[i] UTF8String];
@@ -115,8 +114,43 @@ static UnityFramework *_ufw = nil;
 #pragma mark - UnityFrameworkListener
 
 - (void)unityDidUnload:(NSNotification *)notification {
-    // Unity was unloaded; clear handle
     _ufw = nil;
 }
 
 @end
+
+#else
+
+@interface UnityLauncher : NSObject
++ (instancetype)shared;
+- (void)launchUnityIfNeeded;
+- (void)showUnity;
+- (UIViewController *)unityRootViewController;
+@end
+
+@implementation UnityLauncher
+
++ (instancetype)shared {
+    static UnityLauncher *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [UnityLauncher new];
+    });
+    return instance;
+}
+
+- (void)launchUnityIfNeeded {
+    NSLog(@"[UaaL] Unity is not available on the simulator");
+}
+
+- (void)showUnity {
+    NSLog(@"[UaaL] Unity is not available on the simulator");
+}
+
+- (UIViewController *)unityRootViewController {
+    return nil;
+}
+
+@end
+
+#endif

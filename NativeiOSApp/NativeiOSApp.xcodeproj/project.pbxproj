@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4DE8AE972FB16D8B00FA164A /* UnityFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DE8AE932FB16D3600FA164A /* UnityFramework.framework */; platformFilter = ios; };
 		4DE8AE982FB16D8B00FA164A /* UnityFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DE8AE932FB16D3600FA164A /* UnityFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4DE8AE9D2FB16E7100FA164A /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 4DE8AE9C2FB16E7100FA164A /* Data */; };
 /* End PBXBuildFile section */
@@ -62,7 +61,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4DE8AE972FB16D8B00FA164A /* UnityFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
