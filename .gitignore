@@ -18,6 +18,7 @@
 /UnityProject/[Bb]uilds/
 /UnityProject/[Ll]ogs/
 /UnityProject/[Uu]ser[Ss]ettings/
+/UnityProject/.idea/*
 *.log
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be committed to version control.
