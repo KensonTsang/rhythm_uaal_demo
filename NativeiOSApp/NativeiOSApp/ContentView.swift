@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("unityLaunched") private var launched = false
+    @State private var launched = false
     @State private var showingDummyUnity = false
 
     var body: some View {
@@ -21,12 +21,7 @@ struct ContentView: View {
                             object: nil,
                             queue: .main
                         ) { _ in                            
-                            if let windowScene = UIApplication.shared.connectedScenes
-                                .first as? UIWindowScene,
-                               let window = windowScene.windows.first {
-                                window.rootViewController = UIHostingController(rootView: ContentView())
-                                window.makeKeyAndVisible()
-                            }
+                            NativeWindowHolder.shared.window?.makeKeyAndVisible()
                         }
                 }
 
