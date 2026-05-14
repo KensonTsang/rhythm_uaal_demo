@@ -7,11 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4DE8AE982FB16D8B00FA164A /* UnityFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DE8AE932FB16D3600FA164A /* UnityFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4D21433E2FB53FAC0007375C /* UnityFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DE8AE932FB16D3600FA164A /* UnityFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4DE8AE9D2FB16E7100FA164A /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 4DE8AE9C2FB16E7100FA164A /* Data */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4D21438D2FB55D7F0007375C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4DE8AE852FB16D3500FA164A /* Unity-iPhone.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9D25AB9C213FB47800354C27;
+			remoteInfo = UnityFramework;
+		};
 		4DE8AE922FB16D3600FA164A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4DE8AE852FB16D3500FA164A /* Unity-iPhone.xcodeproj */;
@@ -19,23 +26,16 @@
 			remoteGlobalIDString = 9D25AB9D213FB47800354C27;
 			remoteInfo = UnityFramework;
 		};
-		4DE8AE9A2FB16DAA00FA164A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4DE8AE852FB16D3500FA164A /* Unity-iPhone.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9D25AB9C213FB47800354C27;
-			remoteInfo = UnityFramework;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4DE8AE992FB16D8B00FA164A /* Embed Frameworks */ = {
+		4D21433F2FB53FAC0007375C /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4DE8AE982FB16D8B00FA164A /* UnityFramework.framework in Embed Frameworks */,
+				4D21433E2FB53FAC0007375C /* UnityFramework.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -111,12 +111,12 @@
 				4DE8AE5E2FB16B9300FA164A /* Sources */,
 				4DE8AE5F2FB16B9300FA164A /* Frameworks */,
 				4DE8AE602FB16B9300FA164A /* Resources */,
-				4DE8AE992FB16D8B00FA164A /* Embed Frameworks */,
+				4D21433F2FB53FAC0007375C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4DE8AE9B2FB16DAA00FA164A /* PBXTargetDependency */,
+				4D21438E2FB55D7F0007375C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4DE8AE642FB16B9300FA164A /* NativeiOSApp */,
@@ -201,10 +201,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4DE8AE9B2FB16DAA00FA164A /* PBXTargetDependency */ = {
+		4D21438E2FB55D7F0007375C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UnityFramework;
-			targetProxy = 4DE8AE9A2FB16DAA00FA164A /* PBXContainerItemProxy */;
+			targetProxy = 4D21438D2FB55D7F0007375C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

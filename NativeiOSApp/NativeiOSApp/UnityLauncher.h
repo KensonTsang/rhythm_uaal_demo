@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 - (void)launchUnityIfNeeded;
 - (void)showUnity;
+- (void)hideUnityAndShowNative;
 - (UIViewController *)unityRootViewController;
 @end
 
