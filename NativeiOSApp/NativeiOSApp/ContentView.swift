@@ -8,13 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var launched = false
+    @AppStorage("unityLaunched") private var launched = false
     @State private var showingDummyUnity = false
 
     var body: some View {
         VStack(spacing: 16) {
             Text("UaaL Host")
                 .font(.title)
+                .onAppear{
+                    NotificationCenter.default.addObserver(
+                            forName: NSNotification.Name("ShowNativeUINotification"),
+                            object: nil,
+                            queue: .main
+                        ) { _ in                            
+                            if let windowScene = UIApplication.shared.connectedScenes
+                                .first as? UIWindowScene,
+                               let window = windowScene.windows.first {
+                                window.rootViewController = UIHostingController(rootView: ContentView())
+                                window.makeKeyAndVisible()
+                            }
+                        }
+                }
 
             Button(launched || showingDummyUnity ? "Show Unity" : "Launch Unity") {
                 #if targetEnvironment(simulator)
