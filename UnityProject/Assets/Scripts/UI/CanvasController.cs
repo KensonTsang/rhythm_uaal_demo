@@ -3,14 +3,22 @@ using Button = UnityEngine.UI.Button;
 
 public class CanvasController : MonoBehaviour
 {
-    public Button closeButton;
+    public Button killButton;
+    public Button hideButton;
 
     void Start()
     {  
-        closeButton.onClick.AddListener(() =>
+        hideButton.onClick.AddListener(() =>
         {
-            Debug.Log("onClick closeBtn");
-            NativeBridge.instance.CloseUnity();
+            Debug.Log("onClick hideBtn");
+            NativeBridge.instance.HideUnity();
         });
+        
+        killButton.onClick.AddListener(() =>
+        {
+            Debug.Log("onClick killBtn");
+            NativeBridge.instance.HideUnity();
+        });
+        
     }
 }

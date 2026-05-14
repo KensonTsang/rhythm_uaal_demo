@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 
 extern "C" {
-    void CloseUnityView() {
+    void HideUnityView() {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter]
-                postNotificationName:@"CloseUnityNotification"
+                postNotificationName:@"HideUnityNotification"
                 object:nil];
         });
     }

@@ -57,7 +57,7 @@ static UnityFramework *_ufw = nil;
         [[NSNotificationCenter defaultCenter]
             addObserver:self
             selector:@selector(hideUnityAndShowNative)
-            name:@"CloseUnityNotification"
+            name:@"HideUnityNotification"
             object:nil];
     }
     return self;
@@ -176,7 +176,7 @@ static UnityFramework *_ufw = nil;
         [[NSNotificationCenter defaultCenter]
             addObserver:self
             selector:@selector(hideUnityAndShowNative)
-            name:@"CloseUnityNotification"
+            name:@"HideUnityNotification"
             object:nil];
     }
     return self;

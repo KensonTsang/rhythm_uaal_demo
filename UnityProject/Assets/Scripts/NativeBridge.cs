@@ -6,7 +6,7 @@ public class NativeBridge : MonoBehaviour
     public static NativeBridge instance;
     
     [DllImport("__Internal")]
-    private static extern void CloseUnityView();
+    private static extern void HideUnityView();
 
 
     private void Awake()
@@ -19,11 +19,11 @@ public class NativeBridge : MonoBehaviour
     }
 
 
-    public void CloseUnity()
+    public void HideUnity()
     {
         Debug.Log("NativeBridge CloseUnity");
 #if UNITY_IOS && !UNITY_EDITOR
-            CloseUnityView();
+            HideUnityView();
 #endif
     }
     
