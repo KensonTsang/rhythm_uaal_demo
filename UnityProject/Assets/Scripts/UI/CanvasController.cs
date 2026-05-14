@@ -17,7 +17,7 @@ public class CanvasController : MonoBehaviour
         killButton.onClick.AddListener(() =>
         {
             Debug.Log("onClick killBtn");
-            NativeBridge.instance.HideUnity();
+            NativeBridge.instance.KillUnity();
         });
         
     }

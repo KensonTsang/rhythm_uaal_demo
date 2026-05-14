@@ -794,6 +794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 315ba98f091da40a6a27b81e8bac5052, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CanvasController
+  killButton: {fileID: 1398469418}
   hideButton: {fileID: 902363285}
 --- !u!1 &1350920531
 GameObject:

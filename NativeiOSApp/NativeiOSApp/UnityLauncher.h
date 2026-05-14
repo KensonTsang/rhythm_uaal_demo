@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)launchUnityIfNeeded;
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
+- (void)killUnityAndShowNative;
 - (UIViewController *)unityRootViewController;
 @end
 

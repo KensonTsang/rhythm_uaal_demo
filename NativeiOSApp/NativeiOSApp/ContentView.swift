@@ -23,6 +23,15 @@ struct ContentView: View {
                         ) { _ in                            
                             NativeWindowHolder.shared.window?.makeKeyAndVisible()
                         }
+                    
+                    NotificationCenter.default.addObserver(
+                        forName: NSNotification.Name("KillUnityNotification"),
+                        object: nil,
+                        queue: .main
+                    ) { _ in
+                        launched = false
+                    }
+                    
                 }
 
             Button(launched || showingDummyUnity ? "Show Unity" : "Launch Unity") {

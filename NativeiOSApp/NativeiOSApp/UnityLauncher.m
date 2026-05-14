@@ -20,9 +20,11 @@
 - (void)runEmbeddedWithArgc:(int)argc argv:(char * _Nullable * _Nullable)argv appLaunchOpts:(NSDictionary *)launchOpts;
 - (void)showUnityWindow;
 - (void)pause:(int)pause;
+- (void)unloadApplication;
 - (void)setDataBundleId:(const char *)bundleId;
 - (void)setExecuteHeader:(void *)header;
 - (void)registerFrameworkListener:(id<UnityFrameworkListener>)listener;
+- (void)unregisterFrameworkListener:(id<UnityFrameworkListener>)obj;
 @end
 
 @interface UnityAppController : UIResponder
@@ -34,10 +36,12 @@
 - (void)launchUnityIfNeeded;
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
+- (void)killUnityAndShowNative;
 - (UIViewController *)unityRootViewController;
 @end
 
 static UnityFramework *_ufw = nil;
+static BOOL _needsRelaunch = NO;
 
 @implementation UnityLauncher
 
@@ -59,6 +63,15 @@ static UnityFramework *_ufw = nil;
             selector:@selector(hideUnityAndShowNative)
             name:@"HideUnityNotification"
             object:nil];
+        
+        
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+            selector:@selector(killUnityAndShowNative)
+            name:@"KillUnityNotification"
+            object:nil];
+        
+        
     }
     return self;
 }
@@ -89,16 +102,23 @@ static UnityFramework *_ufw = nil;
     const char *mainBundleId = [[[NSBundle mainBundle] bundleIdentifier] UTF8String];
     [ufw setDataBundleId:mainBundleId];
     [ufw registerFrameworkListener:self];
-
+    
     _ufw = ufw;
     return ufw;
 }
 
 - (void)launchUnityIfNeeded {
+    NSLog(@"[UaaL] launchUnityIfNeeded called, _ufw = %@", _ufw);
+    
+    
     UnityFramework *ufw = [self loadUnityFramework];
+    NSLog(@"[UaaL] loadUnityFramework returned: %@", ufw);
+    
     if (!ufw) return;
 
-    if (![ufw appController]) {
+    if (![ufw appController] || _needsRelaunch) {
+        NSLog(@"[UaaL] running embedded...");
+        _needsRelaunch = NO;
         NSArray<NSString *> *arguments = [NSProcessInfo processInfo].arguments;
         int argc = (int)arguments.count;
         char **argv = (char **)calloc((size_t)argc, sizeof(char *));
@@ -108,8 +128,13 @@ static UnityFramework *_ufw = nil;
         }
 
         [ufw runEmbeddedWithArgc:argc argv:argv appLaunchOpts:@{}];
+        NSLog(@"[UaaL] runEmbeddedWithArgc finished");
+    }
+    else {
+        NSLog(@"[UaaL] appController exists, skipping runEmbedded");
     }
 
+    NSLog(@"[UaaL] calling showUnityWindow");
     [ufw showUnityWindow];
 }
 
@@ -124,6 +149,7 @@ static UnityFramework *_ufw = nil;
 
 
 - (void)hideUnityAndShowNative {
+    NSLog(@"hideUnityAndShowNative called");
     if (_ufw) {
         [_ufw pause:1];
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -131,6 +157,14 @@ static UnityFramework *_ufw = nil;
                 postNotificationName:@"ShowNativeUINotification"
                 object:nil];
         });
+    }
+}
+
+- (void)killUnityAndShowNative{
+    NSLog(@"killUnityAndShowNative called");
+    if (_ufw) {
+        _needsRelaunch = YES;
+        [_ufw unloadApplication];
     }
 }
 
@@ -144,7 +178,14 @@ static UnityFramework *_ufw = nil;
 #pragma mark - UnityFrameworkListener
 
 - (void)unityDidUnload:(NSNotification *)notification {
+    NSLog(@"[UaaL] unityDidUnload called, setting _ufw to nil");
+    [_ufw unregisterFrameworkListener:self];
     _ufw = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"ShowNativeUINotification"
+            object:nil];
+    });
 }
 
 @end
@@ -156,6 +197,7 @@ static UnityFramework *_ufw = nil;
 - (void)launchUnityIfNeeded;
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
+- (void)killUnityAndShowNative;
 - (UIViewController *)unityRootViewController;
 @end
 
@@ -178,6 +220,13 @@ static UnityFramework *_ufw = nil;
             selector:@selector(hideUnityAndShowNative)
             name:@"HideUnityNotification"
             object:nil];
+        
+        
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+            selector:@selector(killUnityAndShowNative)
+            name:@"KillUnityNotification"
+            object:nil];
     }
     return self;
 }
@@ -195,6 +244,10 @@ static UnityFramework *_ufw = nil;
 }
 
 - (void)hideUnityAndShowNative {
+    NSLog(@"[UaaL] Unity is not available on the simulator");
+}
+
+- (void)killUnityAndShowNative{
     NSLog(@"[UaaL] Unity is not available on the simulator");
 }
 
