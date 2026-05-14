@@ -38,14 +38,9 @@ struct ContentView: View {
                 #if targetEnvironment(simulator)
                 showingDummyUnity = true
                 #else
-                if launched {
-                    UnityLauncher.shared().showUnity()
-                } else {
-                    print("Launching Unity from SwiftUI...")
-                    UnityLauncher.shared().launchUnityIfNeeded()
-                    print("Unity launch call finished")
-                    launched = true
-                }
+                print("showUnity")
+                UnityLauncher.shared().showUnity()
+                launched = true
                 #endif
             }
             .buttonStyle(.borderedProminent)
