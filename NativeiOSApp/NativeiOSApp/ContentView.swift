@@ -42,6 +42,7 @@ struct ContentView: View {
                 UnityLauncher.shared().showUnity()
                 launched = true
                 #endif
+                NativeOverlayWindow.shared.showOverlay()
             }
             .buttonStyle(.borderedProminent)
         }
