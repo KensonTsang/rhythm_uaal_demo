@@ -20,6 +20,7 @@ public class NativeBridge : MonoBehaviour
             instance = this.GetComponent<NativeBridge>();
         }
         Debug.Log("NativeBridge Awake");
+        DontDestroyOnLoad(this.gameObject);
     }
 
 
