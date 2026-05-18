@@ -8,25 +8,19 @@ public class NativeCanvasController : MonoBehaviour
     public Button killButton;
     public Button hideButton;
 
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
-
     void Start()
     {  
         
         hideButton.onClick.AddListener(() =>
         {
             Debug.Log("onClick hideBtn");
-            NativeBridge.instance.HideUnity();
+            NativeBridge.instance.PostMessageToNative(new NativeMessage(){type = "HideUnity"});
         });
         
         killButton.onClick.AddListener(() =>
         {
             Debug.Log("onClick killBtn");
-            NativeBridge.instance.KillUnity();
+            NativeBridge.instance.PostMessageToNative(new NativeMessage(){type = "KillUnity"});
         });
         
     }

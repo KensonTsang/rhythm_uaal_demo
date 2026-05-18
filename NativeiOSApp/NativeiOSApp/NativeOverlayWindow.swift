@@ -61,8 +61,28 @@ class NativeOverlayWindow: UIWindow {
         self.isHidden = false
         self.makeKeyAndVisible()
     }
+    
+    func showNativeAlert(message: String) {
+
+        guard let rootVC = self.rootViewController else {
+            return
+        }
+
+        let alert = UIAlertController(
+            title: "Native Message Received",
+            message: message,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(
+            UIAlertAction(title: "OK", style: .default)
+        )
+
+        rootVC.present(alert, animated: true)
+    }
 
     func hideOverlay() {
         self.isHidden = true
     }
 }
+

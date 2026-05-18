@@ -37,6 +37,8 @@
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
 - (void)killUnityAndShowNative;
+- (void)changeContentViewTextMessage:(NSString *)message;
+- (void)handleUnityMessage:(NSNotification *)notification;
 - (UIViewController *)unityRootViewController;
 @end
 
@@ -60,15 +62,8 @@ static BOOL _needsRelaunch = NO;
     if (self) {
         [[NSNotificationCenter defaultCenter]
             addObserver:self
-            selector:@selector(hideUnityAndShowNative)
-            name:@"HideUnityNotification"
-            object:nil];
-        
-        
-        [[NSNotificationCenter defaultCenter]
-            addObserver:self
-            selector:@selector(killUnityAndShowNative)
-            name:@"KillUnityNotification"
+            selector:@selector(handleUnityMessage:)
+            name:@"UnityMessageNotification"
             object:nil];
         
         
@@ -148,7 +143,7 @@ static BOOL _needsRelaunch = NO;
 }
 
 
-- (void)hideUnityAndShowNative {
+- (void)hideUnityAndShowNative{
     NSLog(@"hideUnityAndShowNative called");
     if (_ufw) {
         [_ufw pause:1];
@@ -167,6 +162,43 @@ static BOOL _needsRelaunch = NO;
         [_ufw unloadApplication];
     }
 }
+
+- (void)changeContentViewTextMessage:(NSString *)message
+{
+    NSLog(@"changeContentViewTextMessage, text: %@", message);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"ChangeUnityTextMessageNotification"
+            object:nil
+            userInfo:@{@"message":message}
+        ];
+    });
+}
+
+- (void)handleUnityMessage:(NSNotification *)notification
+{
+    NSDictionary *msg = notification.userInfo;
+    
+    NSString *type = msg[@"type"];
+    NSString *payload = msg[@"payload"];
+    
+    if ([type isEqualToString:@"UpdateText"])
+    {
+        NSLog(@"Message received, Update text: %@", payload);
+        [self changeContentViewTextMessage:payload];
+    }
+    else if ([type isEqualToString:@"HideUnity"])
+    {
+        NSLog(@"Message received, Hide Unity");
+        [self hideUnityAndShowNative];
+    }
+    else if ([type isEqualToString:@"KillUnity"])
+    {
+        NSLog(@"Message received, Kill Unity");
+        [self killUnityAndShowNative];
+    }
+}
+
 
 
 
@@ -190,6 +222,8 @@ static BOOL _needsRelaunch = NO;
 
 @end
 
+
+
 #else
 
 @interface UnityLauncher : NSObject
@@ -198,6 +232,7 @@ static BOOL _needsRelaunch = NO;
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
 - (void)killUnityAndShowNative;
+- (void)handleUnityMessage:(NSNotification *)notification;
 - (UIViewController *)unityRootViewController;
 @end
 
@@ -217,15 +252,8 @@ static BOOL _needsRelaunch = NO;
     if (self) {
         [[NSNotificationCenter defaultCenter]
             addObserver:self
-            selector:@selector(hideUnityAndShowNative)
-            name:@"HideUnityNotification"
-            object:nil];
-        
-        
-        [[NSNotificationCenter defaultCenter]
-            addObserver:self
-            selector:@selector(killUnityAndShowNative)
-            name:@"KillUnityNotification"
+            selector:@selector(handleUnityMessage:)
+            name:@"UnityMessageNotification"
             object:nil];
     }
     return self;
@@ -248,6 +276,11 @@ static BOOL _needsRelaunch = NO;
 }
 
 - (void)killUnityAndShowNative{
+    NSLog(@"[UaaL] Unity is not available on the simulator");
+}
+
+- (void)handleUnityMessage:(NSNotification *)notification
+{
     NSLog(@"[UaaL] Unity is not available on the simulator");
 }
 

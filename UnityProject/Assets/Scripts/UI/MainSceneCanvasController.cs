@@ -5,6 +5,9 @@ public class MainSceneCanvasController : MonoBehaviour
 {
    public Button loadModelButton;
 
+   [Space(10)] 
+   public TMPro.TMP_Text inputText;
+   public Button sendButton;
 
    void Start()
    {
@@ -15,5 +18,16 @@ public class MainSceneCanvasController : MonoBehaviour
          
          loadModelButton.gameObject.SetActive(false);
       });
+      
+      sendButton.onClick.AddListener(() =>
+      {
+         var msg = new NativeMessage
+         {
+            type = "UpdateText",
+            payload = inputText.text
+         };
+         NativeBridge.instance.PostMessageToNative(msg);
+      });
+      
    }
 }

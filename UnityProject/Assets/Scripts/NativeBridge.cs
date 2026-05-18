@@ -6,39 +6,27 @@ public class NativeBridge : MonoBehaviour
     public static NativeBridge instance;
     
     [DllImport("__Internal")]
-    private static extern void HideUnityView();
-
-
-    [DllImport("__Internal")]
-    private static extern void KillUnityView();
+    private static extern void SendMessageToNative(string message);
 
 
     private void Awake()
     {
         if (instance == null)
         {
-            instance = this.GetComponent<NativeBridge>();
+            instance = this;
         }
         Debug.Log("NativeBridge Awake");
-        DontDestroyOnLoad(this.gameObject);
     }
 
-
-    public void HideUnity()
-    {
-        Debug.Log("NativeBridge CloseUnity");
+    public void PostMessageToNative(NativeMessage message)
+    {  
+        string json = JsonUtility.ToJson(message);
+        Debug.Log($"PostMessageToNative: {json}");
 #if UNITY_IOS && !UNITY_EDITOR
-        HideUnityView();
+        SendMessageToNative(json);
 #endif
     }
     
-    public void KillUnity()
-    {
-        Debug.Log("NativeBridge KillUnity");
-#if UNITY_IOS && !UNITY_EDITOR
-        KillUnityView();
-#endif
-    }
     
     
 }

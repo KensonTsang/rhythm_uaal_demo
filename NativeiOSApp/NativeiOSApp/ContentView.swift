@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var launched = false
     @State private var showingDummyUnity = false
+    @State private var unityMessage = "Text message from unity"
 
     var body: some View {
         VStack(spacing: 16) {
@@ -20,10 +21,10 @@ struct ContentView: View {
                             forName: NSNotification.Name("ShowNativeUINotification"),
                             object: nil,
                             queue: .main
-                        ) { _ in                            
+                        ) { _ in
                             NativeWindowHolder.shared.window?.makeKeyAndVisible()
                         }
-                    
+
                     NotificationCenter.default.addObserver(
                         forName: NSNotification.Name("KillUnityNotification"),
                         object: nil,
@@ -31,8 +32,29 @@ struct ContentView: View {
                     ) { _ in
                         launched = false
                     }
-                    
+
+                    NotificationCenter.default.addObserver(
+                        forName: NSNotification.Name("ChangeUnityTextMessageNotification"),
+                        object: nil,
+                        queue: .main
+                    ) { notification in
+                        if let msg = notification.userInfo?["message"] as? String {
+                            unityMessage = "Receive message: \(msg)"
+                            
+                            NativeOverlayWindow.shared.showNativeAlert(
+                                message: unityMessage
+                            )
+                        }
+                    }
                 }
+
+            if !unityMessage.isEmpty {
+                Text(unityMessage)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(8)
+            }
 
             Button(launched || showingDummyUnity ? "Show Unity" : "Launch Unity") {
                 #if targetEnvironment(simulator)
@@ -45,6 +67,7 @@ struct ContentView: View {
                 NativeOverlayWindow.shared.showOverlay()
             }
             .buttonStyle(.borderedProminent)
+                        
         }
         .padding()
         .fullScreenCover(isPresented: $showingDummyUnity) {
