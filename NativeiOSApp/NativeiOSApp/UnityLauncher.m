@@ -37,6 +37,7 @@
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
 - (void)killUnityAndShowNative;
+- (void)requestJsonFromNative:(NSString *)message;
 - (void)changeContentViewTextMessage:(NSString *)message;
 - (void)handleUnityMessage:(NSNotification *)notification;
 - (UIViewController *)unityRootViewController;
@@ -175,6 +176,13 @@ static BOOL _needsRelaunch = NO;
     });
 }
 
+
+- (void)requestJsonFromNative:(NSString *)message
+{
+    NSLog(@"requestJsonFromNative, text: %@", message);    
+}
+
+
 - (void)handleUnityMessage:(NSNotification *)notification
 {
     NSDictionary *msg = notification.userInfo;
@@ -196,6 +204,11 @@ static BOOL _needsRelaunch = NO;
     {
         NSLog(@"Message received, Kill Unity");
         [self killUnityAndShowNative];
+    }
+    else if ([type isEqualToString:@"RequestJson"])
+    {
+        NSLog(@"Message received, RequestJson: %@", payload);
+        [self requestJsonFromNative:payload];
     }
 }
 

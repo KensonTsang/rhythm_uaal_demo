@@ -43,11 +43,27 @@ public class MainSceneCanvasController : MonoBehaviour
       
       loadJson1Button.onClick.AddListener(() =>
       {
+         Debug.Log("onClick json1");
+         var msg = new NativeMessage
+         {
+            type = "RequestJson",
+            payload = "json1"
+         };
+         NativeBridge.instance.PostMessageToNative(msg);
+         
          jsonText.text = "json1";
       });
       
       loadJson2Button.onClick.AddListener(() =>
       {
+         Debug.Log("onClick json2");
+         var msg = new NativeMessage
+         {
+            type = "RequestJson",
+            payload = "json2"
+         };
+         NativeBridge.instance.PostMessageToNative(msg);
+         
          jsonText.text = "json2";
       });
       
