@@ -6,4 +6,5 @@ public class NativeMessage
 {
     public string type;
     public string payload;
+    public string messageId;
 }

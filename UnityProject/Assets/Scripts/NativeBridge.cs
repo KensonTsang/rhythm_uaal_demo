@@ -1,9 +1,13 @@
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class NativeBridge : MonoBehaviour
 {
     public static NativeBridge instance;
+    
+    public Action<string> onMessageReceived;
+    
     
     [DllImport("__Internal")]
     private static extern void SendMessageToNative(string message);
@@ -26,7 +30,20 @@ public class NativeBridge : MonoBehaviour
         SendMessageToNative(json);
 #endif
     }
+
+    public void OnMessageReceived(string msg)
+    {
+        onMessageReceived?.Invoke(msg);
+    }
     
     
+    [Serializable]
+    public class MessageJson
+    {
+        public string id;
+        public int chunkIndex;
+        public int totalChunks;
+        public string data;
+    }
     
 }

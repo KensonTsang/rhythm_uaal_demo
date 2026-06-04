@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "NativeiOSApp-Swift.h"
 
 #if !TARGET_OS_SIMULATOR
 
@@ -25,6 +26,7 @@
 - (void)setExecuteHeader:(void *)header;
 - (void)registerFrameworkListener:(id<UnityFrameworkListener>)listener;
 - (void)unregisterFrameworkListener:(id<UnityFrameworkListener>)obj;
+- (void)sendMessageToGOWithName:(const char *)goName functionName:(const char *)name message:(const char *)msg;
 @end
 
 @interface UnityAppController : UIResponder
@@ -179,7 +181,20 @@ static BOOL _needsRelaunch = NO;
 
 - (void)requestJsonFromNative:(NSString *)message
 {
-    NSLog(@"requestJsonFromNative, text: %@", message);    
+    NSLog(@"requestJsonFromNative, text: %@", message);
+    NSString *jsonData = [JsonLoader loadJsonNamed:message];
+    if (!jsonData) return;
+
+    NSString *msgJson = [JsonLoader buildMessageJsonWithId:message
+                                               chunkIndex:0
+                                              totalChunks:1
+                                                     data:jsonData];
+    if (msgJson && _ufw) {
+        NSLog(@"requestJsonFromNative, sending MessageJson to Unity (%lu bytes)", (unsigned long)msgJson.length);
+        [_ufw sendMessageToGOWithName:"NativeBridge"
+                         functionName:"OnMessageReceived"
+                              message:[msgJson UTF8String]];
+    }
 }
 
 
