@@ -469,7 +469,7 @@ GameObject:
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -809,7 +809,7 @@ GameObject:
   - component: {fileID: 924375906}
   - component: {fileID: 924375907}
   m_Layer: 0
-  m_Name: JsonMessageDispatcher
+  m_Name: NativeMessageDispatcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1418,7 +1418,7 @@ GameObject:
   - component: {fileID: 1532321563}
   - component: {fileID: 1532321567}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: StartSceneCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

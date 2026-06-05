@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class MainSceneCanvasController : MonoBehaviour
 {
+   
+   private const string REQUEST_JSON_ID = "RequestJson";
+   
    public Button loadModelButton;
 
    [Space(10)] 
@@ -46,12 +49,10 @@ public class MainSceneCanvasController : MonoBehaviour
          Debug.Log("onClick json1");
          var msg = new NativeMessage
          {
-            type = "RequestJson",
+            type = REQUEST_JSON_ID,
             payload = "json1"
          };
          NativeBridge.instance.PostMessageToNative(msg);
-         
-         jsonText.text = "json1";
       });
       
       loadJson2Button.onClick.AddListener(() =>
@@ -59,14 +60,27 @@ public class MainSceneCanvasController : MonoBehaviour
          Debug.Log("onClick json2");
          var msg = new NativeMessage
          {
-            type = "RequestJson",
+            type = REQUEST_JSON_ID,
             payload = "json2"
          };
          NativeBridge.instance.PostMessageToNative(msg);
-         
-         jsonText.text = "json2";
       });
-      
-      
+
+
+      NativeMessageDispatcher.instance.onMessageDispatched += UpdateJsonTextFromNative;
+
    }
+
+   void OnDestroy()
+   {
+      NativeMessageDispatcher.instance.onMessageDispatched -= UpdateJsonTextFromNative;
+   }
+
+
+   private void UpdateJsonTextFromNative(string id, string json)
+   {
+      var jsonSubString = json.Substring(0, 200) + "..." + json.Substring(json.Length - 200);
+      jsonText.text = jsonSubString;
+   }
+   
 }
