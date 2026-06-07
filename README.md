@@ -84,6 +84,12 @@ There is no Makefile or script — both steps are driven by their respective IDE
 - [ ] **Multi-language font support** — load locale-appropriate fonts (e.g. CJK, Arabic, Latin) that cover all target scripts
 - [ ] **Shared font pipeline** — bundle fonts once in the native app and expose them to Unity at runtime, so both sides render text with the same typeface without duplicating assets
 
+## Credits
+
+| Asset | Author | Source |
+|-------|--------|--------|
+| Hover Bike - The Rocket | — | [Sketchfab](https://sketchfab.com/3d-models/hover-bike-the-rocket-8b2e5bfca78e41c791b4e5b5e8c04512) |
+
 ## Requirements
 
 - Unity 6 (6000.4.6f1) with iOS Build Support module
