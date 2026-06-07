@@ -2,52 +2,44 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NativeMessageDispatcher : MonoBehaviour
+public class NativeMessageDispatcher : MonoBehaviour, IMessageDispatcher
 {
-    public static NativeMessageDispatcher instance;
-    
-    Dictionary<string, List<NativeBridge.MessageJson>>  _pendingMessages = new Dictionary<string, List<NativeBridge.MessageJson>>();
+    public INativeBridge Bridge { get; set; }
 
-    public Action<string, string> onMessageDispatched;
+    private readonly Dictionary<string, List<MessageJson>> _pendingMessages =
+        new Dictionary<string, List<MessageJson>>();
 
+    public event Action<string, string> onMessageDispatched;
 
-    private void Awake()
+    private void Start()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
-    }
-    
-    void Start()
-    {
-        NativeBridge.instance.onMessageReceived += DispatchMessage;
+        if (Bridge == null)
+            throw new InvalidOperationException(
+                "[NativeMessageDispatcher] Bridge not set. Was ServiceBootstrapper executed?");
+        Bridge.onMessageReceived += DispatchMessage;
     }
 
     private void OnDestroy()
     {
-        NativeBridge.instance.onMessageReceived -= DispatchMessage;
+        if (Bridge != null)
+            Bridge.onMessageReceived -= DispatchMessage;
     }
 
     private void DispatchMessage(string message)
     {
-        var chunk = JsonUtility.FromJson<NativeBridge.MessageJson>(message);
+        var chunk = JsonUtility.FromJson<MessageJson>(message);
 
         if (!_pendingMessages.ContainsKey(chunk.id))
-        {
-            _pendingMessages.Add(chunk.id, new List<NativeBridge.MessageJson>(chunk.totalChunks));
-        }
-        
+            _pendingMessages.Add(chunk.id, new List<MessageJson>(chunk.totalChunks));
+
         _pendingMessages[chunk.id].Add(chunk);
 
         if (IsChunkCompleted(chunk.id))
         {
             FireMessageDispatched(chunk.id);
-            _pendingMessages.Remove(chunk.id);                
+            _pendingMessages.Remove(chunk.id);
         }
-        
     }
-
 
     private bool IsChunkCompleted(string id)
     {
@@ -57,11 +49,8 @@ public class NativeMessageDispatcher : MonoBehaviour
         if (chunks.Count == 0)
             return false;
 
-        int totalChunks = chunks[0].totalChunks;
-
-        return chunks.Count == totalChunks;
+        return chunks.Count == chunks[0].totalChunks;
     }
-
 
     private void FireMessageDispatched(string id)
     {
@@ -71,42 +60,33 @@ public class NativeMessageDispatcher : MonoBehaviour
         chunks.Sort((a, b) => a.chunkIndex.CompareTo(b.chunkIndex));
 
         Debug.Log($"FireMessageDispatched, total chunks: {chunks.Count}");
-        
+
         for (int i = 0; i < chunks.Count; i++)
         {
             if (chunks[i].chunkIndex != i)
             {
-                Debug.LogError(
-                    $"Missing chunk. Expected:{i} Actual:{chunks[i].chunkIndex}");
+                Debug.LogError($"Missing chunk. Expected:{i} Actual:{chunks[i].chunkIndex}");
                 return;
             }
         }
 
-        List<byte> allBytes = new();
-
+        var allBytes = new List<byte>();
         foreach (var chunk in chunks)
         {
             try
             {
-                byte[] bytes = Convert.FromBase64String(chunk.data);
-                allBytes.AddRange(bytes);
+                allBytes.AddRange(Convert.FromBase64String(chunk.data));
             }
             catch (Exception e)
             {
-                Debug.LogError(
-                    $"Failed to decode Base64 chunk {chunk.chunkIndex}: {e}");
+                Debug.LogError($"Failed to decode Base64 chunk {chunk.chunkIndex}: {e}");
                 return;
             }
         }
 
-        string fullMessage =
-            System.Text.Encoding.UTF8.GetString(allBytes.ToArray());
-
-        Debug.Log(
-            $"Message reconstructed. Id:{id}, Length:{fullMessage.Length}");
+        string fullMessage = System.Text.Encoding.UTF8.GetString(allBytes.ToArray());
+        Debug.Log($"Message reconstructed. Id:{id}, Length:{fullMessage.Length}");
 
         onMessageDispatched?.Invoke(id, fullMessage);
-        
     }
-    
 }

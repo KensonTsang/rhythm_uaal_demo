@@ -1637,6 +1637,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1987554447}
   - component: {fileID: 1987554446}
+  - component: {fileID: 1987554448}
   m_Layer: 0
   m_Name: NativeBridge
   m_TagString: Untagged
@@ -1671,6 +1672,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1357355565}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1987554448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1987554445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75245ca21d06f48c482572ac3ce6ee48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ServiceBootstrapper
+  _dispatcher: {fileID: 924375907}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
