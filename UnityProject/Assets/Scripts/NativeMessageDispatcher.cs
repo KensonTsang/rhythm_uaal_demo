@@ -31,28 +31,20 @@ public class NativeMessageDispatcher : MonoBehaviour
 
     private void DispatchMessage(string message)
     {
-        Debug.Log("payload length: "+message.Length);
-        var messageJson = JsonUtility.FromJson<NativeBridge.MessageJson>(message);
-        
+        var chunk = JsonUtility.FromJson<NativeBridge.MessageJson>(message);
 
-        if (!_pendingMessages.ContainsKey(messageJson.id))
+        if (!_pendingMessages.ContainsKey(chunk.id))
         {
-            _pendingMessages.Add(messageJson.id, new List<NativeBridge.MessageJson>());
+            _pendingMessages.Add(chunk.id, new List<NativeBridge.MessageJson>(chunk.totalChunks));
         }
         
-        _pendingMessages[messageJson.id].Add(messageJson);
+        _pendingMessages[chunk.id].Add(chunk);
 
-        if (IsChunkCompleted(messageJson.id))
+        if (IsChunkCompleted(chunk.id))
         {
-            FireMessageDispatched(messageJson.id);
-            _pendingMessages.Remove(messageJson.id);                
+            FireMessageDispatched(chunk.id);
+            _pendingMessages.Remove(chunk.id);                
         }
-        
-        
-        Debug.Log("messageId: "+messageJson.id);
-        Debug.Log("chunkIndex: "+messageJson.chunkIndex);
-        Debug.Log("totalChunks: "+messageJson.totalChunks);
-        Debug.Log("data size: "+messageJson.data.Length);
         
     }
 
@@ -78,25 +70,40 @@ public class NativeMessageDispatcher : MonoBehaviour
 
         chunks.Sort((a, b) => a.chunkIndex.CompareTo(b.chunkIndex));
 
+        Debug.Log($"FireMessageDispatched, total chunks: {chunks.Count}");
+        
         for (int i = 0; i < chunks.Count; i++)
         {
             if (chunks[i].chunkIndex != i)
             {
-                Debug.LogError($"Missing chunk. Expected:{i} Actual:{chunks[i].chunkIndex}");
+                Debug.LogError(
+                    $"Missing chunk. Expected:{i} Actual:{chunks[i].chunkIndex}");
                 return;
             }
         }
 
-        var sb = new System.Text.StringBuilder();
+        List<byte> allBytes = new();
 
         foreach (var chunk in chunks)
         {
-            sb.Append(chunk.data);
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(chunk.data);
+                allBytes.AddRange(bytes);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(
+                    $"Failed to decode Base64 chunk {chunk.chunkIndex}: {e}");
+                return;
+            }
         }
 
-        string fullMessage = sb.ToString();
+        string fullMessage =
+            System.Text.Encoding.UTF8.GetString(allBytes.ToArray());
 
-        Debug.Log($"Message reconstructed. Id:{id}, Length:{fullMessage.Length}");
+        Debug.Log(
+            $"Message reconstructed. Id:{id}, Length:{fullMessage.Length}");
 
         onMessageDispatched?.Invoke(id, fullMessage);
         

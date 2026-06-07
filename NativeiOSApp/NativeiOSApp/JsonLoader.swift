@@ -20,6 +20,8 @@ struct MessageJson: Codable {
         switch message {
         case "json1":
             fileName = "json1_1MB"
+        case "json2":
+            fileName = "json2_3MB"
         default:
             NSLog("[JsonLoader] Unknown json request: %@", message)
             return nil

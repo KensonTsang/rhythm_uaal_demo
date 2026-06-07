@@ -39,7 +39,8 @@
 - (void)showUnity;
 - (void)hideUnityAndShowNative;
 - (void)killUnityAndShowNative;
-- (void)requestJsonFromNative:(NSString *)message;
+- (void)requestJsonFromNative:(NSString *)messageId
+                      message:(NSString *)message;
 - (void)changeContentViewTextMessage:(NSString *)message;
 - (void)handleUnityMessage:(NSNotification *)notification;
 - (UIViewController *)unityRootViewController;
@@ -179,18 +180,37 @@ static BOOL _needsRelaunch = NO;
 }
 
 
-- (void)requestJsonFromNative:(NSString *)message
+- (void)requestJsonFromNative:(NSString *)messageId
+                      message:(NSString *)message;
 {
     NSLog(@"requestJsonFromNative, text: %@", message);
     NSString *jsonData = [JsonLoader loadJsonNamed:message];
     if (!jsonData) return;
 
-    NSString *msgJson = [JsonLoader buildMessageJsonWithId:message
-                                               chunkIndex:0
-                                              totalChunks:1
-                                                     data:jsonData];
-    if (msgJson && _ufw) {
-        NSLog(@"requestJsonFromNative, sending MessageJson to Unity (%lu bytes)", (unsigned long)msgJson.length);
+    NSData *jsonBytes = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
+
+    const NSUInteger kChunkSize = 256;
+
+    NSUInteger totalBytes = jsonBytes.length;
+    NSUInteger totalChunks = (totalBytes + kChunkSize - 1) / kChunkSize;
+
+    for (NSUInteger chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
+    {
+        NSUInteger location = chunkIndex * kChunkSize;
+        NSUInteger length = MIN(kChunkSize, totalBytes - location);
+
+        NSData *chunkData =
+            [jsonBytes subdataWithRange:NSMakeRange(location, length)];
+
+        NSString *base64 =
+            [chunkData base64EncodedStringWithOptions:0];
+
+        NSString *msgJson =
+            [JsonLoader buildMessageJsonWithId:messageId
+                                   chunkIndex:chunkIndex
+                                  totalChunks:totalChunks
+                                         data:base64];
+
         [_ufw sendMessageToGOWithName:"NativeBridge"
                          functionName:"OnMessageReceived"
                               message:[msgJson UTF8String]];
@@ -223,7 +243,7 @@ static BOOL _needsRelaunch = NO;
     else if ([type isEqualToString:@"RequestJson"])
     {
         NSLog(@"Message received, RequestJson: %@", payload);
-        [self requestJsonFromNative:payload];
+        [self requestJsonFromNative:type message:payload];
     }
 }
 

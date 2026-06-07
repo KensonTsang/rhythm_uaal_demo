@@ -79,7 +79,9 @@ public class MainSceneCanvasController : MonoBehaviour
 
    private void UpdateJsonTextFromNative(string id, string json)
    {
-      var jsonSubString = json.Substring(0, 200) + "..." + json.Substring(json.Length - 200);
+      if (id != REQUEST_JSON_ID) return;
+      
+      var jsonSubString = json.Substring(0, 200) + "\n...\n" + json.Substring(json.Length - 200);
       jsonText.text = jsonSubString;
    }
    
