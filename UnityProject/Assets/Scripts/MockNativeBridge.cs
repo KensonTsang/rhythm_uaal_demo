@@ -21,7 +21,10 @@ public class MockNativeBridge : INativeBridge
         Debug.Log($"[MockNativeBridge] PostMessageToNative: type={message.type} payload={message.payload}");
 
         if (message.type == "RequestJson")
-            _coroutineRunner.StartCoroutine(SimulateJsonResponse(message.payload, message.type));
+        {
+            var chunkId = string.IsNullOrEmpty(message.messageId) ? message.type : message.messageId;
+            _coroutineRunner.StartCoroutine(SimulateJsonResponse(message.payload, chunkId));
+        }
     }
 
     private IEnumerator SimulateJsonResponse(string resourceKey, string chunkId)

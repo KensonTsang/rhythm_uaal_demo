@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class MainSceneCanvasController : MonoBehaviour
 {
-   private const string REQUEST_JSON_ID = "RequestJson";
+   private const string REQUEST_JSON_TYPE = "RequestJson";
 
    public Button loadModelButton;
 
@@ -20,6 +20,8 @@ public class MainSceneCanvasController : MonoBehaviour
 
    private INativeBridge _bridge;
    private IMessageDispatcher _dispatcher;
+   private readonly System.Collections.Generic.HashSet<string> _pendingJsonIds =
+       new System.Collections.Generic.HashSet<string>();
 
    void Start()
    {
@@ -52,11 +54,9 @@ public class MainSceneCanvasController : MonoBehaviour
       {
          jsonText.text = "loading json from native side...";
          Debug.Log("onClick json1");
-         var msg = new NativeMessage
-         {
-            type = REQUEST_JSON_ID,
-            payload = "json1"
-         };
+         var msgId = System.Guid.NewGuid().ToString();
+         _pendingJsonIds.Add(msgId);
+         var msg = new NativeMessage { type = REQUEST_JSON_TYPE, payload = "json1", messageId = msgId };
          _bridge.PostMessageToNative(msg);
       });
 
@@ -64,11 +64,9 @@ public class MainSceneCanvasController : MonoBehaviour
       {
          jsonText.text = "loading json from native side...";
          Debug.Log("onClick json2");
-         var msg = new NativeMessage
-         {
-            type = REQUEST_JSON_ID,
-            payload = "json2"
-         };
+         var msgId = System.Guid.NewGuid().ToString();
+         _pendingJsonIds.Add(msgId);
+         var msg = new NativeMessage { type = REQUEST_JSON_TYPE, payload = "json2", messageId = msgId };
          _bridge.PostMessageToNative(msg);
       });
 
@@ -83,7 +81,7 @@ public class MainSceneCanvasController : MonoBehaviour
 
    private void UpdateJsonTextFromNative(string id, string json)
    {
-      if (id != REQUEST_JSON_ID) return;
+      if (!_pendingJsonIds.Remove(id)) return;
 
       var jsonSubString = json.Substring(0, 200) + "\n...\n" + json.Substring(json.Length - 200);
       jsonText.text = jsonSubString;

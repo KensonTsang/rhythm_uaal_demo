@@ -243,7 +243,8 @@ static BOOL _needsRelaunch = NO;
     else if ([type isEqualToString:@"RequestJson"])
     {
         NSLog(@"Message received, RequestJson: %@", payload);
-        [self requestJsonFromNative:type message:payload];
+        NSString *msgId = msg[@"messageId"];
+        [self requestJsonFromNative:(msgId.length > 0 ? msgId : type) message:payload];
     }
 }
 
